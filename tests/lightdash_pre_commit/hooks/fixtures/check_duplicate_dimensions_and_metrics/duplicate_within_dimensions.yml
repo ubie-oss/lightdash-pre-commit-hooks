@@ -1,0 +1,22 @@
+version: 2
+models:
+  - name: Test Duplicate Across Dimensions
+    columns:
+      - name: date_at
+        meta:
+          dimension:
+            type: date
+            time_intervals: [DAY, WEEK, MONTH, QUARTER]
+          additional_dimensions:
+            test_me:
+              type: string
+              sql: abc
+      - name: revenue
+        meta:
+          dimension:
+            type: number
+            hidden: true
+          additional_dimensions:
+            test_me:
+              type: string
+              sql: abc

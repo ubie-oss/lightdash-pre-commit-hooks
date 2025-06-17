@@ -1,0 +1,14 @@
+version: 2
+models:
+  - name: Test Metric vs Additional Dimension
+    columns:
+      - name: revenue
+        meta:
+          metrics:
+            revenue_sum:
+              type: sum
+              sql: sum(revenue)
+          additional_dimensions:
+            revenue_sum:
+              type: string
+              sql: revenue::string

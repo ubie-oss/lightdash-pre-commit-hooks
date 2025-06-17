@@ -44,7 +44,7 @@ format:
 # Run the unit tests.
 .PHONY: test
 test:
-	bash ./dev/test_python.sh
+	uv run bash ./dev/test_python.sh
 
 # Build the package
 .PHONY: build
@@ -67,3 +67,7 @@ publish:
 .PHONY: test-publish
 test-publish:
 	bash ./dev/publish.sh "testpypi"
+
+download-lightdash-schema:
+	curl -o resources/lightdash-dbt-2.0.json \
+		https://raw.githubusercontent.com/lightdash/lightdash/refs/heads/main/packages/common/src/schemas/json/lightdash-dbt-2.0.json

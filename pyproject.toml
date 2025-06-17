@@ -35,7 +35,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
 ]
-dependencies = ["ruamel-yaml>=0.18.14"]
+dependencies = ["pydantic>=2.8,<3.0", "pyyaml>=6.0.2"]
 
 [project.optional-dependencies]
 dev = [
@@ -45,6 +45,9 @@ dev = [
   "ruff>=0.9.10",
   "mypy>=1.15.0",
   "pylint>=3.3.5",
+  "datamodel-code-generator>=0.30,<0.40",
+  "pre-commit>=4.2.0",
+  "types-PyYAML>=6.0.4",
 ]
 
 [build-system]
@@ -63,7 +66,13 @@ exclude = [
   "dev",
   "dist",
   ".python-version",
+  "resources",
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/lightdash_pre_commit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = ["-v", "-s", "--tb=short"]

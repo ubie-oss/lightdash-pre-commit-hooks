@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: orders_model
+    columns:
+      - name: user_id # dimension your metric is aggregating
+        meta:
+          metrics:
+            distinct_user_ids: # name of your metric
+              type: count_distinct # metric type
+      - name: revenue # dimension your metric is aggregating
+        meta:
+          metrics:
+            sum_revenue: # name of your metric
+              type: sum # metric type
