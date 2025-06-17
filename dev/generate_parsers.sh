@@ -2,7 +2,8 @@
 set -Eeuo pipefail
 
 # Constants
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+SCRIPT_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="$(dirname "${SCRIPT_PATH}")"
 MODULE_ROOT="$(dirname "${SCRIPT_DIR}")"
 
 # Base class
