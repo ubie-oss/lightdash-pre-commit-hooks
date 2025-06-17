@@ -1,0 +1,1 @@
+# Lightdash pre-commit hooks
