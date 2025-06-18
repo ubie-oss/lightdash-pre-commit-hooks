@@ -1,0 +1,50 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Development Tools Guide
+
+This project uses several key tools for development and maintenance:
+
+## Python Dependency Management - uv
+
+The project uses `uv` as the modern Python package manager for dependency management.
+
+- **Configuration**: [pyproject.toml](mdc:pyproject.toml) - Contains project metadata and dependencies
+- **Lock file**: [uv.lock](mdc:uv.lock) - Ensures reproducible builds with exact dependency versions
+- **Setup requirements**: [requirements.setup.txt](mdc:requirements.setup.txt) - Additional setup-time dependencies
+
+Key uv commands:
+- `uv sync` - Install dependencies from lock file
+- `uv add <package>` - Add new dependency
+- `uv lock` - Update lock file
+
+## Testing - unittest
+
+The project uses Python's built-in `unittest` framework for testing.
+
+- **Test directory**: [tests/](mdc:tests) - Contains all test files
+- **Test structure**: Tests are organized under `tests/lightdash_pre_commit/`
+- **Example test**: [test_dummy.py](mdc:tests/lightdash_pre_commit/test_dummy.py)
+
+Run tests with:
+- `python -m unittest discover tests/`
+- Or use the development scripts in [dev/](mdc:dev)
+
+## Code Quality - Trunk
+
+The project uses Trunk for managing various linters and code quality tools.
+
+- **Configuration**: [.trunk/trunk.yaml](mdc:.trunk/trunk.yaml) - Trunk configuration and enabled linters
+- Trunk provides a unified interface for running multiple linters (Python linters, formatters, etc.)
+
+Key trunk commands:
+- `trunk check` - Run all configured linters
+- `trunk fmt` - Format code using configured formatters
+- `trunk check --fix` - Auto-fix issues where possible
+
+## Build System
+
+- **Makefile**: [Makefile](mdc:Makefile) - Contains common development tasks and build commands
+- **Development scripts**: [dev/](mdc:dev) - Contains helper scripts for building, testing, and setup

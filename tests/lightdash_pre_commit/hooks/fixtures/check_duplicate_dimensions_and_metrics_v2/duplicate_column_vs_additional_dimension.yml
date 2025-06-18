@@ -1,0 +1,13 @@
+version: 2
+models:
+  - name: Test Column vs Additional Dimension
+    columns:
+      - name: user_id
+        config:
+          meta:
+            dimension:
+              type: string
+            additional_dimensions:
+              user_id:
+                type: string
+                sql: processed_user_id

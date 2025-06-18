@@ -1,0 +1,30 @@
+version: 2
+models:
+  - name: Test Multiple Duplicates
+    meta:
+      metrics:
+        total_count:
+          type: count
+          sql: count(*)
+    columns:
+      - name: user_id
+        meta:
+          dimension:
+            type: string
+          metrics:
+            total_count:
+              type: count_distinct
+              sql: count(distinct user_id)
+            user_metric:
+              type: count
+              sql: count(user_id)
+      - name: revenue
+        meta:
+          metrics:
+            user_metric:
+              type: sum
+              sql: sum(revenue)
+          additional_dimensions:
+            user_id:
+              type: string
+              sql: processed_user_id

@@ -1,0 +1,21 @@
+version: 2
+models:
+  - name: Test Duplicate Within Metrics
+    columns:
+      - name: date_at
+        meta:
+          dimension:
+            type: date
+            time_intervals: [DAY, WEEK, MONTH, QUARTER]
+          metrics:
+            test_me:
+              type: number
+              sql: (datediff('day', min(date_at), max(date_at)) + 1)
+      - name: revenue
+        meta:
+          dimension:
+            type: number
+            hidden: true
+          metrics:
+            test_me:
+              type: sum
