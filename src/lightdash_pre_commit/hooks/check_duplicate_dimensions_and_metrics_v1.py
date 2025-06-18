@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import argparse
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence
 
 from lightdash_pre_commit.hooks.base import BaseChecker
 from lightdash_pre_commit.hooks.utils import process_single_file
@@ -29,71 +29,67 @@ class FindDuplicateDimensionsAndMetricsV1(BaseChecker):
         if not isinstance(data, LightdashV20):
             raise ValueError("Expected 'data' keyword argument of type LightdashV20")
 
-        all_names: Dict[str, List[Tuple[str, str]]] = (
-            {}
-        )  # Track names and their sources
-        errors: List[str] = []
+        all_errors: List[str] = []
 
-        # Check for metrics and dimensions defined at the model level
+        # Check for duplicates within each model individually
         if data.models:
             for model in data.models:
                 model_name = model.name or "unknown_model"
+                model_errors = cls._check_single_model(model, model_name)
+                all_errors.extend(model_errors)
 
-                # Process model-level metrics
-                if model.meta and model.meta.metrics:
-                    for metric_name in model.meta.metrics.keys():
+        return all_errors
+
+    @classmethod
+    def _check_single_model(cls, model: Model, model_name: str) -> List[str]:
+        """Check for duplicates within a single model."""
+        all_names: Dict[str, List[str]] = {}  # Track names and their sources
+        errors: List[str] = []
+
+        # Process model-level metrics
+        if model.meta and model.meta.metrics:
+            for metric_name in model.meta.metrics.keys():
+                if metric_name not in all_names:
+                    all_names[metric_name] = []
+                all_names[metric_name].append("model-level metric")
+
+        # Check for metrics and dimensions defined at the column level
+        if model.columns:
+            for column in model.columns:
+                if not column.meta or not column.name:
+                    continue
+
+                column_name = column.name
+
+                # Process column-level dimensions (the column name itself becomes a dimension)
+                if column.meta.dimension:
+                    if column_name not in all_names:
+                        all_names[column_name] = []
+                    all_names[column_name].append(f"column '{column_name}' dimension")
+
+                # Process column-level additional dimensions
+                if column.meta.additional_dimensions:
+                    for ad_dim_name in column.meta.additional_dimensions.keys():
+                        if ad_dim_name not in all_names:
+                            all_names[ad_dim_name] = []
+                        all_names[ad_dim_name].append(
+                            f"additional dimension in column '{column_name}'"
+                        )
+
+                # Process column-level metrics
+                if column.meta.metrics:
+                    for metric_name in column.meta.metrics.keys():
                         if metric_name not in all_names:
                             all_names[metric_name] = []
                         all_names[metric_name].append(
-                            (model_name, "model-level metric")
+                            f"metric in column '{column_name}'"
                         )
 
-                # Check for metrics and dimensions defined at the column level
-                if model.columns:
-                    for column in model.columns:
-                        if not column.meta or not column.name:
-                            continue
-
-                        column_name = column.name
-
-                        # Process column-level dimensions (the column name itself becomes a dimension)
-                        if column.meta.dimension:
-                            if column_name not in all_names:
-                                all_names[column_name] = []
-                            all_names[column_name].append(
-                                (model_name, f"column '{column_name}' dimension")
-                            )
-
-                        # Process column-level additional dimensions
-                        if column.meta.additional_dimensions:
-                            for ad_dim_name in column.meta.additional_dimensions.keys():
-                                if ad_dim_name not in all_names:
-                                    all_names[ad_dim_name] = []
-                                all_names[ad_dim_name].append(
-                                    (
-                                        model_name,
-                                        f"additional dimension in column '{column_name}'",
-                                    )
-                                )
-
-                        # Process column-level metrics
-                        if column.meta.metrics:
-                            for metric_name in column.meta.metrics.keys():
-                                if metric_name not in all_names:
-                                    all_names[metric_name] = []
-                                all_names[metric_name].append(
-                                    (model_name, f"metric in column '{column_name}'")
-                                )
-
-        # Check for duplicates and gather detailed error messages
+        # Check for duplicates within this model
         for name, sources in all_names.items():
             if len(sources) > 1:
-                source_descriptions = []
-                for model_name, source_type in sources:
-                    source_descriptions.append(f"{source_type} in model '{model_name}'")
-
                 errors.append(
-                    f"Duplicate name '{name}' used {len(sources)} times: {', '.join(source_descriptions)}"
+                    f"Duplicate name '{name}' used {len(sources)} times: {', '.join(sources)} in model '{model_name}'"
                 )
 
         return errors

@@ -16,7 +16,7 @@
   name: Check for duplicate dimensions and metrics for dbt 1.9 or earlier
   description: |
     Checks to ensure that a metric or dimension name only exists once within the dbt schema file for a given model.
-  entry: check-duplicate-dims-and-metrics-v1
+  entry: check-duplicate-dimensions-and-metrics-v1
   pass_filenames: true
   language: python
   types_or: [yaml]
@@ -28,7 +28,7 @@
   name: Check for duplicate dimensions and metrics for dbt 1.10 or later
   description: |
     Checks to ensure that a metric or dimension name only exists once within the dbt schema file for a given model.
-  entry: check-duplicate-dims-and-metrics-v2
+  entry: check-duplicate-dimensions-and-metrics-v2
   pass_filenames: true
   language: python
   types_or: [yaml]
