@@ -6,9 +6,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import Field, RootModel, confloat, constr
-
-from lightdash_pre_commit.models.base import BaseParserModel
+from lightdash_pre_commit.parsers.base import BaseParserModel
+from pydantic import ConfigDict, Field, RootModel, confloat, constr
 
 
 class Version(Enum):
@@ -26,8 +25,8 @@ class Join(BaseParserModel):
 
 
 class OrderFieldsBy(Enum):
-    index = "index"
-    label = "label"
+    index = 'index'
+    label = 'label'
 
 
 class GroupDetails(BaseParserModel):
@@ -36,18 +35,18 @@ class GroupDetails(BaseParserModel):
 
 
 class Type(Enum):
-    percentile = "percentile"
-    median = "median"
-    average = "average"
-    boolean = "boolean"
-    count = "count"
-    count_distinct = "count_distinct"
-    date = "date"
-    max = "max"
-    min = "min"
-    number = "number"
-    string = "string"
-    sum = "sum"
+    percentile = 'percentile'
+    median = 'median'
+    average = 'average'
+    boolean = 'boolean'
+    count = 'count'
+    count_distinct = 'count_distinct'
+    date = 'date'
+    max = 'max'
+    min = 'min'
+    number = 'number'
+    string = 'string'
+    sum = 'sum'
 
 
 class Group(RootModel[constr(min_length=1)]):
@@ -59,10 +58,10 @@ class Interval(Enum):
     The default time interval to use when analyzing this time dimension
     """
 
-    DAY = "DAY"
-    WEEK = "WEEK"
-    MONTH = "MONTH"
-    YEAR = "YEAR"
+    DAY = 'DAY'
+    WEEK = 'WEEK'
+    MONTH = 'MONTH'
+    YEAR = 'YEAR'
 
 
 class DefaultTimeDimension(BaseParserModel):
@@ -71,17 +70,17 @@ class DefaultTimeDimension(BaseParserModel):
     """
 
     field: str = Field(
-        ..., description="The name of the field to use as the default time dimension"
+        ..., description='The name of the field to use as the default time dimension'
     )
     interval: Interval = Field(
         ...,
-        description="The default time interval to use when analyzing this time dimension",
+        description='The default time interval to use when analyzing this time dimension',
     )
 
 
 class Visibility(Enum):
-    show = "show"
-    hide = "hide"
+    show = 'show'
+    hide = 'hide'
 
 
 class Spotlight(BaseParserModel):
@@ -91,7 +90,7 @@ class Spotlight(BaseParserModel):
 
     visibility: Visibility
     categories: Optional[List[str]] = Field(
-        None, description="An array of categories for the metric in Spotlight"
+        None, description='An array of categories for the metric in Spotlight'
     )
 
 
@@ -102,7 +101,7 @@ class Spotlight1(BaseParserModel):
 
     visibility: Optional[Visibility] = None
     categories: List[str] = Field(
-        ..., description="An array of categories for the metric in Spotlight"
+        ..., description='An array of categories for the metric in Spotlight'
     )
 
 
@@ -113,22 +112,22 @@ class Metrics(BaseParserModel):
     sql: constr(min_length=1)
     hidden: Optional[bool] = None
     round: Optional[confloat(ge=0.0)] = Field(
-        None, description="Rounds the metric to the specified number of decimal places"
+        None, description='Rounds the metric to the specified number of decimal places'
     )
     format: Optional[str] = None
     percentile: Optional[float] = None
     groups: Optional[List[Group]] = Field(
         None,
-        description="Groups are used to group dimensions and metrics in the sidebar. You can create nested groups up to 3 levels",
+        description='Groups are used to group dimensions and metrics in the sidebar. You can create nested groups up to 3 levels',
         max_length=3,
     )
     default_time_dimension: Optional[DefaultTimeDimension] = Field(
         None,
-        description="Specifies the default time dimension field and interval to use for time-based analysis on this metric. If specified, both field and interval are required. If there is already a default time dimension set in the model, this will override it.",
+        description='Specifies the default time dimension field and interval to use for time-based analysis on this metric. If specified, both field and interval are required. If there is already a default time dimension set in the model, this will override it.',
     )
     spotlight: Optional[Union[Spotlight, Spotlight1]] = Field(
         None,
-        description="Set the visibility and/or categories of a metric in Spotlight",
+        description='Set the visibility and/or categories of a metric in Spotlight',
     )
 
 
@@ -138,11 +137,11 @@ class DefaultTimeDimension1(BaseParserModel):
     """
 
     field: str = Field(
-        ..., description="The name of the field to use as the default time dimension"
+        ..., description='The name of the field to use as the default time dimension'
     )
     interval: Interval = Field(
         ...,
-        description="The default time interval to use when analyzing this time dimension",
+        description='The default time interval to use when analyzing this time dimension',
     )
 
 
@@ -154,7 +153,7 @@ class Spotlight2(BaseParserModel):
     visibility: Visibility
     categories: Optional[List[str]] = Field(
         None,
-        description="An optional array of categories for all metrics in this model in Spotlight",
+        description='An optional array of categories for all metrics in this model in Spotlight',
     )
 
 
@@ -166,27 +165,27 @@ class Spotlight3(BaseParserModel):
     visibility: Optional[Visibility] = None
     categories: List[str] = Field(
         ...,
-        description="An optional array of categories for all metrics in this model in Spotlight",
+        description='An optional array of categories for all metrics in this model in Spotlight',
     )
 
 
 class Meta(BaseParserModel):
     joins: Optional[List[Join]] = None
     order_fields_by: Optional[OrderFieldsBy] = None
-    group_details: Optional[Dict[constr(pattern=r"^[a-zA-Z0-9_]+$"), GroupDetails]] = (
+    group_details: Optional[Dict[constr(pattern=r'^[a-zA-Z0-9_]+$'), GroupDetails]] = (
         Field(
             None,
-            description="Set up group_details so you can group your dimensions and metrics in the sidebar using the groups parameter. You can create nested groups up to 3 levels",
+            description='Set up group_details so you can group your dimensions and metrics in the sidebar using the groups parameter. You can create nested groups up to 3 levels',
         )
     )
-    metrics: Optional[Dict[constr(pattern=r"^[a-z0-9_]+$"), Metrics]] = None
+    metrics: Optional[Dict[constr(pattern=r'^[a-z0-9_]+$'), Metrics]] = None
     default_time_dimension: Optional[DefaultTimeDimension1] = Field(
         None,
-        description="Specifies the default time dimension field and interval to use for time-based analysis (on any metric in the model). If specified, both field and interval are required.",
+        description='Specifies the default time dimension field and interval to use for time-based analysis (on any metric in the model). If specified, both field and interval are required.',
     )
     spotlight: Optional[Union[Spotlight2, Spotlight3]] = Field(
         None,
-        description="Set the visibility and/or categories of a metric in Spotlight",
+        description='Set the visibility and/or categories of a metric in Spotlight',
     )
 
 
@@ -210,55 +209,55 @@ class Metrics1(BaseParserModel):
     percentile: Optional[float] = None
     groups: Optional[List[Group]] = Field(
         None,
-        description="Groups are used to group dimensions and metrics in the sidebar. You can create nested groups up to 3 levels",
+        description='Groups are used to group dimensions and metrics in the sidebar. You can create nested groups up to 3 levels',
         max_length=3,
     )
     default_time_dimension: Optional[DefaultTimeDimension2] = Field(
         None,
-        description="Specifies the default time dimension field and interval to use for time-based analysis on this metric. If specified, both field and interval are required. If there is already a default time dimension set in the model, this will override it.",
+        description='Specifies the default time dimension field and interval to use for time-based analysis on this metric. If specified, both field and interval are required. If there is already a default time dimension set in the model, this will override it.',
     )
     spotlight: Optional[Union[Spotlight4, Spotlight5]] = Field(
         None,
-        description="Set the visibility and/or categories of a metric in Spotlight",
+        description='Set the visibility and/or categories of a metric in Spotlight',
     )
 
 
 class Type2(Enum):
-    string = "string"
-    number = "number"
-    timestamp = "timestamp"
-    date = "date"
-    boolean = "boolean"
+    string = 'string'
+    number = 'number'
+    timestamp = 'timestamp'
+    date = 'date'
+    boolean = 'boolean'
 
 
 class TimeInterval(Enum):
-    RAW = "RAW"
-    DAY = "DAY"
-    WEEK = "WEEK"
-    MONTH = "MONTH"
-    QUARTER = "QUARTER"
-    YEAR = "YEAR"
-    HOUR = "HOUR"
-    MINUTE = "MINUTE"
-    SECOND = "SECOND"
-    MILLISECOND = "MILLISECOND"
-    WEEK_NUM = "WEEK_NUM"
-    MONTH_NUM = "MONTH_NUM"
-    MONTH_NAME = "MONTH_NAME"
-    DAY_OF_WEEK_NAME = "DAY_OF_WEEK_NAME"
-    QUARTER_NAME = "QUARTER_NAME"
-    DAY_OF_WEEK_INDEX = "DAY_OF_WEEK_INDEX"
-    DAY_OF_MONTH_NUM = "DAY_OF_MONTH_NUM"
-    DAY_OF_YEAR_NUM = "DAY_OF_YEAR_NUM"
-    QUARTER_NUM = "QUARTER_NUM"
-    YEAR_NUM = "YEAR_NUM"
-    HOUR_OF_DAY_NUM = "HOUR_OF_DAY_NUM"
-    MINUTE_OF_HOUR_NUM = "MINUTE_OF_HOUR_NUM"
+    RAW = 'RAW'
+    DAY = 'DAY'
+    WEEK = 'WEEK'
+    MONTH = 'MONTH'
+    QUARTER = 'QUARTER'
+    YEAR = 'YEAR'
+    HOUR = 'HOUR'
+    MINUTE = 'MINUTE'
+    SECOND = 'SECOND'
+    MILLISECOND = 'MILLISECOND'
+    WEEK_NUM = 'WEEK_NUM'
+    MONTH_NUM = 'MONTH_NUM'
+    MONTH_NAME = 'MONTH_NAME'
+    DAY_OF_WEEK_NAME = 'DAY_OF_WEEK_NAME'
+    QUARTER_NAME = 'QUARTER_NAME'
+    DAY_OF_WEEK_INDEX = 'DAY_OF_WEEK_INDEX'
+    DAY_OF_MONTH_NUM = 'DAY_OF_MONTH_NUM'
+    DAY_OF_YEAR_NUM = 'DAY_OF_YEAR_NUM'
+    QUARTER_NUM = 'QUARTER_NUM'
+    YEAR_NUM = 'YEAR_NUM'
+    HOUR_OF_DAY_NUM = 'HOUR_OF_DAY_NUM'
+    MINUTE_OF_HOUR_NUM = 'MINUTE_OF_HOUR_NUM'
 
 
 class TimeIntervals(Enum):
-    default = "default"
-    OFF = "OFF"
+    default = 'default'
+    OFF = 'OFF'
 
 
 class Dimension(BaseParserModel):
@@ -272,7 +271,7 @@ class Dimension(BaseParserModel):
     time_intervals: Optional[Union[List[TimeInterval], TimeIntervals]] = None
     groups: Optional[List[Group]] = Field(
         None,
-        description="Groups are used to group dimensions and metrics in the sidebar. You can create nested groups up to 3 levels",
+        description='Groups are used to group dimensions and metrics in the sidebar. You can create nested groups up to 3 levels',
         max_length=3,
     )
 
@@ -286,10 +285,10 @@ class AdditionalDimensions(BaseParserModel):
 
 
 class Meta1(BaseParserModel):
-    metrics: Optional[Dict[constr(pattern=r"^[a-z0-9_]+$"), Metrics1]] = None
+    metrics: Optional[Dict[constr(pattern=r'^[a-z0-9_]+$'), Metrics1]] = None
     dimension: Optional[Dimension] = None
     additional_dimensions: Optional[
-        Dict[constr(pattern=r"^[a-z0-9_]+$"), AdditionalDimensions]
+        Dict[constr(pattern=r'^[a-z0-9_]+$'), AdditionalDimensions]
     ] = None
 
 
@@ -328,11 +327,11 @@ class Meta2(BaseParserModel):
     format: Optional[str] = None
     default_time_dimension: Optional[DefaultTimeDimension3] = Field(
         None,
-        description="Specifies the default time dimension field and interval to use for time-based analysis on this metric. If specified, both field and interval are required. If there is already a default time dimension set in the model, this will override it.",
+        description='Specifies the default time dimension field and interval to use for time-based analysis on this metric. If specified, both field and interval are required. If there is already a default time dimension set in the model, this will override it.',
     )
     spotlight: Optional[Union[Spotlight6, Spotlight7]] = Field(
         None,
-        description="Set the visibility and/or categories of a metric in Spotlight",
+        description='Set the visibility and/or categories of a metric in Spotlight',
     )
 
 
@@ -351,6 +350,9 @@ class Metric(BaseParserModel):
 
 
 class LightdashV20(BaseParserModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
     version: Optional[Version] = None
     models: Optional[List[Model]] = None
     metrics: Optional[List[Metric]] = None

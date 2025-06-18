@@ -21,7 +21,8 @@ lint:
     - linters: [ALL]
       paths:
         # Generated code
-        - src/lightdash_pre_commit/models/lightdash_dbt_2_0.py
+        - src/lightdash_pre_commit/parsers/lightdash_dbt_2_0.py
+        - src/lightdash_pre_commit/parsers/lightdash_dbt_2_5.py
   disabled: []
   enabled:
     - black@25.1.0

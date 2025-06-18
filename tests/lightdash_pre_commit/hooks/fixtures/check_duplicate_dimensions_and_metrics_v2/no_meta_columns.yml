@@ -1,0 +1,8 @@
+version: 2
+models:
+  - name: Test No Meta
+    columns:
+      - name: id
+        description: Primary key
+      - name: name
+        description: User name

@@ -35,7 +35,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
 ]
-dependencies = ["pydantic>=2.8,<3.0", "pyyaml>=6.0.2"]
+dependencies = ["click>=8.2.1", "pydantic>=2.8,<3.0", "pyyaml>=6.0.2"]
 
 [project.optional-dependencies]
 dev = [
@@ -76,3 +76,7 @@ packages = ["src/lightdash_pre_commit"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = ["-v", "-s", "--tb=short"]
+
+[project.scripts]
+check-duplicate-dimensions-and-metrics-v1 = "lightdash_pre_commit.hooks.check_duplicate_dimensions_and_metrics_v1:main"
+check-duplicate-dimensions-and-metrics-v2 = "lightdash_pre_commit.hooks.check_duplicate_dimensions_and_metrics_v2:main"

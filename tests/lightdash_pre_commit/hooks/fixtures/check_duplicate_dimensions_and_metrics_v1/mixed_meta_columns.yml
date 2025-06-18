@@ -5,10 +5,11 @@ models:
       - name: id
         description: Primary key
       - name: revenue
-        meta:
-          metrics:
-            total_revenue:
-              type: sum
-              sql: sum(revenue)
+        config:
+          meta:
+            metrics:
+              total_revenue:
+                type: sum
+                sql: sum(revenue)
       - name: user_name
         description: User name

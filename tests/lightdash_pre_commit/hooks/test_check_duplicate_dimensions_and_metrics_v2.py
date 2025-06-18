@@ -17,13 +17,13 @@ import unittest
 
 import yaml  # type: ignore[import-untyped]
 
-from lightdash_pre_commit.hooks.check_duplicate_dimensions_and_metrics import (
-    find_duplicates,
+from lightdash_pre_commit.hooks.check_duplicate_dimensions_and_metrics_v2 import (
+    FindDuplicateDimensionsAndMetricsV2,
 )
-from lightdash_pre_commit.models.lightdash_dbt_2_0 import LightdashV20
+from lightdash_pre_commit.parsers.lightdash_dbt_2_5 import LightdashV25
 
 
-class TestCheckDuplicateDimensionsAndMetrics(unittest.TestCase):
+class TestCheckDuplicateDimensionsAndMetricsV2(unittest.TestCase):
     """Test the check_duplicate_dimensions_and_metrics hook."""
 
     def setUp(self):
@@ -31,7 +31,7 @@ class TestCheckDuplicateDimensionsAndMetrics(unittest.TestCase):
         self.fixtures_dir = os.path.join(
             os.path.dirname(__file__),
             "fixtures",
-            "check_duplicate_dimensions_and_metrics",
+            "check_duplicate_dimensions_and_metrics_v2",
         )
 
     def _load_fixture(self, filename: str) -> dict:
@@ -40,21 +40,21 @@ class TestCheckDuplicateDimensionsAndMetrics(unittest.TestCase):
         with open(fixture_path, "r", encoding="utf-8") as file:
             return yaml.safe_load(file)
 
-    def _get_lightdash_data(self, filename: str) -> LightdashV20:
-        """Load a fixture and convert it to LightdashV20 model."""
+    def _get_lightdash_data(self, filename: str) -> LightdashV25:
+        """Load a fixture and convert it to LightdashV25 model."""
         raw_data = self._load_fixture(filename)
-        return LightdashV20.model_validate(raw_data)
+        return LightdashV25.model_validate(raw_data)
 
     def test_no_metrics_or_dimensions(self):
         """Test with empty models - should return no errors."""
         lightdash_data = self._get_lightdash_data("empty_model.yml")
-        errors = find_duplicates(lightdash_data)
+        errors = FindDuplicateDimensionsAndMetricsV2.check(data=lightdash_data)
         self.assertEqual(errors, [])
 
     def test_unique_metric_and_dimension_names(self):
         """Test with unique metric and dimension names - should return no errors."""
         lightdash_data = self._get_lightdash_data("unique_names.yml")
-        errors = find_duplicates(lightdash_data)
+        errors = FindDuplicateDimensionsAndMetricsV2.check(data=lightdash_data)
         self.assertEqual(errors, [])
 
     def test_duplicate_name_across_metric_and_dimension(self):
@@ -62,7 +62,7 @@ class TestCheckDuplicateDimensionsAndMetrics(unittest.TestCase):
         lightdash_data = self._get_lightdash_data(
             "duplicate_across_metric_and_dimension.yml"
         )
-        errors = find_duplicates(lightdash_data)
+        errors = FindDuplicateDimensionsAndMetricsV2.check(data=lightdash_data)
 
         # Check that we found the duplicate
         self.assertEqual(len(errors), 1)
@@ -74,7 +74,7 @@ class TestCheckDuplicateDimensionsAndMetrics(unittest.TestCase):
     def test_duplicate_within_metrics(self):
         """Test duplicate metric names across different columns."""
         lightdash_data = self._get_lightdash_data("duplicate_within_metrics.yml")
-        errors = find_duplicates(lightdash_data)
+        errors = FindDuplicateDimensionsAndMetricsV2.check(data=lightdash_data)
 
         # Check that we found the duplicate
         self.assertEqual(len(errors), 1)
@@ -86,7 +86,7 @@ class TestCheckDuplicateDimensionsAndMetrics(unittest.TestCase):
     def test_duplicate_within_dimensions(self):
         """Test duplicate dimension names in additional_dimensions across columns."""
         lightdash_data = self._get_lightdash_data("duplicate_within_dimensions.yml")
-        errors = find_duplicates(lightdash_data)
+        errors = FindDuplicateDimensionsAndMetricsV2.check(data=lightdash_data)
 
         # Check that we found the duplicate
         self.assertEqual(len(errors), 1)
@@ -100,7 +100,7 @@ class TestCheckDuplicateDimensionsAndMetrics(unittest.TestCase):
         lightdash_data = self._get_lightdash_data(
             "duplicate_column_vs_additional_dimension.yml"
         )
-        errors = find_duplicates(lightdash_data)
+        errors = FindDuplicateDimensionsAndMetricsV2.check(data=lightdash_data)
 
         # Check that we found the duplicate
         self.assertEqual(len(errors), 1)
@@ -114,7 +114,7 @@ class TestCheckDuplicateDimensionsAndMetrics(unittest.TestCase):
         lightdash_data = self._get_lightdash_data(
             "duplicate_metric_vs_additional_dimension.yml"
         )
-        errors = find_duplicates(lightdash_data)
+        errors = FindDuplicateDimensionsAndMetricsV2.check(data=lightdash_data)
 
         # Check that we found the duplicate
         self.assertEqual(len(errors), 1)
@@ -126,7 +126,7 @@ class TestCheckDuplicateDimensionsAndMetrics(unittest.TestCase):
     def test_multiple_duplicates(self):
         """Test with multiple different duplicates in the same model."""
         lightdash_data = self._get_lightdash_data("multiple_duplicates.yml")
-        errors = find_duplicates(lightdash_data)
+        errors = FindDuplicateDimensionsAndMetricsV2.check(data=lightdash_data)
 
         # Should find multiple duplicates
         self.assertTrue(len(errors) >= 2)
@@ -138,15 +138,11 @@ class TestCheckDuplicateDimensionsAndMetrics(unittest.TestCase):
     def test_no_meta_columns(self):
         """Test with columns that have no meta section."""
         lightdash_data = self._get_lightdash_data("no_meta_columns.yml")
-        errors = find_duplicates(lightdash_data)
+        errors = FindDuplicateDimensionsAndMetricsV2.check(data=lightdash_data)
         self.assertEqual(errors, [])
 
     def test_mixed_meta_and_no_meta_columns(self):
         """Test with a mix of columns with and without meta sections."""
         lightdash_data = self._get_lightdash_data("mixed_meta_columns.yml")
-        errors = find_duplicates(lightdash_data)
+        errors = FindDuplicateDimensionsAndMetricsV2.check(data=lightdash_data)
         self.assertEqual(errors, [])
-
-
-if __name__ == "__main__":
-    unittest.main()

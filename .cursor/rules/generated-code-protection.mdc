@@ -1,0 +1,27 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Generated Code Protection
+
+## Parser Files - DO NOT EDIT
+
+The parser files in [src/lightdash_pre_commit/parsers/](mdc:src/lightdash_pre_commit/parsers) contain **GENERATED CODE** and should **NOT be edited manually**.
+
+### Protected Files:
+- [lightdash_dbt_2_0.py](mdc:src/lightdash_pre_commit/parsers/lightdash_dbt_2_0.py) - Generated parser for dbt 2.0 schema
+- [lightdash_dbt_2_5.py](mdc:src/lightdash_pre_commit/parsers/lightdash_dbt_2_5.py) - Generated parser for dbt 2.5 schema
+
+### Important Rules:
+1. **NEVER directly edit** the generated parser files listed above
+2. These files are automatically generated from JSON schemas in [resources/schemas/](mdc:resources/schemas)
+3. To modify parser behavior, update the source schemas and regenerate the parsers
+4. Use the generation script in [dev/generate_parsers.sh](mdc:dev/generate_parsers.sh) to regenerate parsers after schema changes
+
+### Regeneration Process:
+- Source schemas: [lightdash-dbt-2.0.json](mdc:resources/schemas/lightdash-dbt-2.0.json) and [lightdash-dbt-2.5.json](mdc:resources/schemas/lightdash-dbt-2.5.json)
+- Generation script: [dev/generate_parsers.sh](mdc:dev/generate_parsers.sh)
+- Manual edits to generated files will be **overwritten** during regeneration
+
+**⚠️ WARNING**: Any manual changes to these generated files will be lost when parsers are regenerated. Always work with the source schemas instead.

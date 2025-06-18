@@ -18,23 +18,23 @@ import os
 import unittest
 from typing import cast
 
-from lightdash_pre_commit.parsers.lightdash_dbt_2_0 import LightdashV20
+from lightdash_pre_commit.parsers.lightdash_dbt_2_5 import LightdashV25
 from tests.lightdash_pre_commit.utils import get_test_root_dir, load_yaml
 
 
-class TestLightdashV20(unittest.TestCase):
-    """Test the LightdashV20 model."""
+class TestLightdashV25(unittest.TestCase):
+    """Test the LightdashV25 model."""
 
     def test_parse_simple_model_schema(self):
         path = os.path.join(
             get_test_root_dir(),
             "models",
             "fixtures",
-            "dbt_1_9",
+            "dbt_1_10",
             "simple_model.yml",
         )
         data = load_yaml(path)
-        dbt_schema = LightdashV20(**data)
+        dbt_schema = LightdashV25(**data)
         if dbt_schema.version:
             self.assertEqual(dbt_schema.version.value, 2)
         expected_model_name = "orders_model"
@@ -62,11 +62,22 @@ class TestLightdashV20(unittest.TestCase):
         first_column = columns[0]
         self.assertEqual(first_column.name, "user_id")
 
+        # Get column meta (handle both old and new formats)
+        column_meta = None
+        if hasattr(first_column, "meta") and first_column.meta:
+            column_meta = first_column.meta
+        elif (
+            hasattr(first_column, "config")
+            and first_column.config
+            and first_column.config.meta
+        ):
+            column_meta = first_column.config.meta
+
         # Assert non-null for meta and metrics
-        self.assertIsNotNone(first_column.meta)
-        meta0 = first_column.meta
-        self.assertIsNotNone(meta0.metrics)
-        metrics0 = cast(dict, meta0.metrics)
+        self.assertIsNotNone(column_meta)
+        column_meta = cast(object, column_meta)  # Type hint for linter
+        self.assertIsNotNone(column_meta.metrics)
+        metrics0 = cast(dict, column_meta.metrics)
 
         self.assertEqual(
             metrics0["distinct_user_ids"].type.value,
@@ -77,11 +88,21 @@ class TestLightdashV20(unittest.TestCase):
         second_column = columns[1]
         self.assertEqual(second_column.name, "revenue")
 
+        # Get second column meta (handle both old and new formats)
+        column_meta1 = None
+        if hasattr(second_column, "meta") and second_column.meta:
+            column_meta1 = second_column.meta
+        elif (
+            hasattr(second_column, "config")
+            and second_column.config
+            and second_column.config.meta
+        ):
+            column_meta1 = second_column.config.meta
+
         # Assert non-null for second column meta and metrics
-        self.assertIsNotNone(second_column.meta)
-        meta1 = second_column.meta
-        self.assertIsNotNone(meta1.metrics)
-        metrics1 = cast(dict, meta1.metrics)
+        self.assertIsNotNone(column_meta1)
+        self.assertIsNotNone(column_meta1.metrics)
+        metrics1 = cast(dict, column_meta1.metrics)
 
         self.assertEqual(
             metrics1["sum_revenue"].type.value,

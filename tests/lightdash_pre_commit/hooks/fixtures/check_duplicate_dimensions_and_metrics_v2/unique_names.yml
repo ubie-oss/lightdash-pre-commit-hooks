@@ -1,0 +1,39 @@
+version: 2
+models:
+  - name: Test All Clean - No Duplicates
+    config:
+      meta:
+        metrics:
+          revenue_total:
+            type: sum
+            sql: sum(revenue)
+          profit_total:
+            type: sum
+            sql: sum(profit)
+    columns:
+      - name: date_at
+        config:
+          meta:
+            dimension:
+              type: date
+              time_intervals: [DAY, WEEK, MONTH, QUARTER]
+            additional_dimensions:
+              period_7_days:
+                type: string
+                sql: abc
+              period_28_days:
+                type: string
+                sql: abc
+            metrics:
+              days_in_period:
+                type: number
+                sql: (datediff('day', min(date_at), max(date_at)) + 1)
+      - name: revenue
+        config:
+          meta:
+            dimension:
+              type: number
+              hidden: true
+            metrics:
+              total_revenue:
+                type: sum
