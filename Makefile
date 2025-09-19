@@ -19,7 +19,7 @@ setup: setup-python
 # Set up the python environment.
 .PHONY: setup-python
 setup-python:
-	bash ./dev/setup.sh --deps "development"
+	uv sync --all-extras
 
 # Check all the coding style.
 .PHONY: lint
