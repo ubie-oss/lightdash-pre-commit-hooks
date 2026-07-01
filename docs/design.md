@@ -889,3 +889,4 @@ The hooks automatically discover and validate:
 - Memory usage <100MB for typical projects
 - Incremental validation (only changed files)
 - Parallel processing support for large projects
+
